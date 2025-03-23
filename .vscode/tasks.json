@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "zig build -Ddev --summary all",
+      "options": {
+        "cwd": "${workspaceFolder}\\XPlaneInterface"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "build-rel",
+      "type": "shell",
+      "command": "zig build --summary all",
+      "options": {
+        "cwd": "${workspaceFolder}\\XPlaneInterface"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+.{
+  .name = .xplane_interface_glasscockpit,
+  .version = "1.0.0",
+  .fingerprint = 0xbb9e39725c1f6b36,
+  .minimum_zig_version = "0.14.0",
+  .dependencies = .{
+    .network = .{
+      .url = "https://github.com/MasterQ32/zig-network/archive/c76240d.tar.gz",
+      .hash = "network-0.1.0-AAAAAOwlAQAQ6zKPUrsibdpGisxld9ftUKGdMvcCSpaj"
+    },
+    .libusb = .{
+      .url = "https://github.com/libusb/libusb/archive/a61afe5.zip",
+      .hash = "N-V-__8AAGT5GgAxQXXIen0EleLF0xfjZZMkR7soefwO0s7E"
+    },
+  },
+  .paths = .{""},
+}

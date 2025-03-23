@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build and Launch Debug",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}\\XPlaneInterface\\build\\Debug\\xplane_interface_glasscockpit.exe",
+      "cwd": "${workspaceFolder}\\XPlaneInterface\\build\\Debug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": [],
+      "symbolSearchPath": "${workspaceFolder}\\XPlaneInterface\\build\\Debug\\xplane_interface_glasscockpit.exe"
+    }
+  ]
+}
