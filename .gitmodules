@@ -1,0 +1,9 @@
+[submodule "Libs/TINYUSB/tinyusb"]
+	path = Libs/TINYUSB/tinyusb
+	url = https://github.com/hathach/tinyusb
+[submodule "Libs/MX66UW1G45G/mx66uw1g45g"]
+	path = Libs/MX66UW1G45G/mx66uw1g45g
+	url = https://github.com/STMicroelectronics/stm32-mx66uw1g45g
+[submodule "Libs/LVGL/lvgl"]
+	path = Libs/LVGL/lvgl
+	url = https://github.com/lvgl/lvgl
