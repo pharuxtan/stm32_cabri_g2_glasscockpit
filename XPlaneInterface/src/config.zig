@@ -46,7 +46,7 @@ pub const USBDataEnum = enum(u8) {
 };
 
 pub const datarefs: []const dataref.DataRef = &[_]dataref.DataRef{
-  .{ .name = "sim/cockpit2/switches/avionics_power_on", .key = .POWER, .T = .uint8 },
+  .{ .name = "sim/cockpit2/electrical/bus_volts[0]", .key = .POWER, .T = .uint8 },
   .{ .name = "vskylabs/g2/carbheat_level", .key = .CARBURATOR_TEMP_LEVEL, .T = .uint8 },
   .{ .name = "sim/cockpit2/annunciators/engine_fire", .key = .ENGINE_FIRE, .T = .uint8 },
   .{ .name = "sim/flightmodel2/misc/has_crashed", .key = .CRASHED, .T = .uint8 },

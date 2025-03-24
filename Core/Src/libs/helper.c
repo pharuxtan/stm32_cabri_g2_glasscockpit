@@ -31,3 +31,19 @@ float get_angle_ratio_from_value(float value, const float (*scale_values)[2], si
   }
   return angle_ratio;
 }
+
+float get_value_from_angle_ratio(float angle_ratio, const float (*scale_values)[2], size_t len)
+{
+  if(angle_ratio <= scale_values[0][1]) return scale_values[0][0];
+  else if(angle_ratio >= scale_values[len-1][1]) return scale_values[len-1][0];
+
+  float value = 0.0f;
+  for(int i = 0; i < len; i++)
+  {
+    if(i+1 < len && angle_ratio >= scale_values[i+1][1]) continue;
+    value = (((angle_ratio - scale_values[i][1])/(scale_values[i+1][1] - scale_values[i][1])) *
+	                    (scale_values[i+1][0] - scale_values[i][0]) + scale_values[i][0]);
+    break;
+  }
+  return value;
+}

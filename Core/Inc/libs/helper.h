@@ -5,6 +5,7 @@
 #include "lvgl/lvgl.h"
 #include "nema_matrix3x3.h"
 
+float get_value_from_angle_ratio(float angle_ratio, const float (*scale_values)[2], size_t len);
 float get_angle_ratio_from_value(float value, const float (*scale_values)[2], size_t len);
 
 #define draw_text_left(str, font_size, _x, _y, bg_clr, txt_clr) ({ \

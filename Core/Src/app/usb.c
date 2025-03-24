@@ -13,7 +13,7 @@ static void process_usb_data(uint32_t size)
     switch(data->data_type)
     {
       case POWER:
-        app.data.power = data->data.u8 != 0;
+        app.data.power = data->data.u8 >= 10;
         HAL_GPIO_WritePin(LCD_ON_GPIO_Port, LCD_ON_Pin, app.data.power);
         __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, LCD_BRIGHTNESS * app.data.power);
         pos += 1;

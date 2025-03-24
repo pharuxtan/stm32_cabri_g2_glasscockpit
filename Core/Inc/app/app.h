@@ -19,7 +19,7 @@
 #define LCD_BRIGHTNESS 100
 
 typedef struct {
-  uint8_t power;                 // sim/cockpit2/switches/avionics_power_on
+  uint8_t power;                 // sim/cockpit2/electrical/bus_volts[0]
   uint8_t carburator_temp_level; // vskylabs/g2/carbheat_level
   uint8_t engine_fire;           // sim/cockpit2/annunciators/engine_fire
   uint8_t crashed;               // sim/flightmodel2/misc/has_crashed

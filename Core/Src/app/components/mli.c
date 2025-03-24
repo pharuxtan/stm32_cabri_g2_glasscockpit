@@ -34,6 +34,23 @@ static const float mli_scale_values[13][2] = {
   { 120.0f, 1.0000f },
 };
 
+static const float pwr_scale_values[2][2] = {
+  { 0.0f, 0.0000f },
+  { 1.0f, 0.8519f },
+};
+
+static const float torque_scale_values[9][2] = {
+  { 000.0f, 0.0000f },
+  { 092.0f, 0.0741f },
+  { 179.0f, 0.2037f },
+  { 272.0f, 0.3426f },
+  { 316.0f, 0.4352f },
+  { 361.0f, 0.5278f },
+  { 407.0f, 0.6667f },
+  { 447.0f, 0.8333f },
+  { 491.0f, 0.9259f },
+};
+
 void init_mli()
 {
   svg_mli[SVG_MLI_SCALE_BAR] 		= load_svg(svg_mli_scale_bar_data);
@@ -52,18 +69,18 @@ void init_mli()
 
 void render_mli(lv_layer_t *layer)
 {
-  float rotor_pwr_angle = get_angle_ratio_from_value(app.data.rotor_pwr * 110.0f, mli_scale_values, 13) * ARROW_ANGLE_RANGE + MIN_ARROW_ANGLE;
-  float engine_torque_angle = get_angle_ratio_from_value((app.data.engine_torque + 90.0f) * 100.0f / 581.0f, mli_scale_values, 13) * ARROW_ANGLE_RANGE + MIN_ARROW_ANGLE;
+  float rotor_pwr_angle = get_angle_ratio_from_value(app.data.rotor_pwr, pwr_scale_values, 2) * ARROW_ANGLE_RANGE + MIN_ARROW_ANGLE;
+  float engine_torque_angle = get_angle_ratio_from_value(app.data.engine_torque, torque_scale_values, 9) * ARROW_ANGLE_RANGE + MIN_ARROW_ANGLE;
 
   static char rotor_pwr[8];
-  sprintf(rotor_pwr, "%.0f%%", app.data.rotor_pwr * 110.0f);
+  sprintf(rotor_pwr, "%.0f%%", get_value_from_angle_ratio((engine_torque_angle - MIN_ARROW_ANGLE) / ARROW_ANGLE_RANGE, mli_scale_values, 13));
 
   lv_draw_svg(layer, svg_mli[SVG_MLI_SCALE_BAR]);
   lv_draw_svg(layer, svg_mli[SVG_MLI_PWR_LIMIT]);
 
   draw_svg_transform(svg_mli[SVG_MLI_ARROW], 2, {
-    transform_child(WHITE_ARROW, rotate, rotor_pwr_angle);
-    transform_child(BLUE_ARROW, rotate, engine_torque_angle);
+    transform_child(WHITE_ARROW, rotate, engine_torque_angle);
+    transform_child(BLUE_ARROW, rotate, rotor_pwr_angle);
   });
 
   draw_text_left("120", 12, 45, 10, CANVAS_BG_COLOR, lv_color_hex3(0xfff));
