@@ -29,7 +29,7 @@ pub fn ask() !void {
 var rcvValues: [datarefs.len]DataRefValue = undefined;
 
 pub fn receive() ![]DataRefValue {
-  var buf: [1024]u8 = undefined;
+  var buf: [5 + 8 * datarefs.len]u8 = undefined;
 
   const bytes = try udp.receive(&buf);
 
