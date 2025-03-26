@@ -26,6 +26,10 @@
 
 // ------ END CONFIGURATION ------
 
+#if LV_USE_NEMA_GFX == 0 && FLUSH_METHOD == FLUSH_NEMA
+#error LV_USE_NEMA_GFX must be enabled to use nema flush method
+#endif
+
 #if LV_COLOR_DEPTH == 16
 #define LVGL_COLOR_BYTE_SIZE 2
 #define LVGL_COLOR_ALIGNMENT 16
