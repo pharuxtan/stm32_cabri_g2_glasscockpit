@@ -16,8 +16,8 @@ static uint32_t get_flush_cf_from_lv_cf(uint32_t cf);
 static uint32_t get_stride_from_flush_cf(uint32_t size, uint32_t cf);
 
 #if FLUSH_METHOD == FLUSH_DMA2D
-static __attribute__((aligned(INTERMEDIATE_COLOR_ALIGNMENT))) \
-    uint8_t intermediate_buffer[LVGL_DISPLAY_WIDTH * LTDC_DISPLAY_HEIGHT * INTERMEDIATE_COLOR_BYTE_SIZE];
+static __attribute__((aligned(SCALE_BUFFER_COLOR_ALIGNMENT))) \
+    uint8_t scale_buffer[LVGL_DISPLAY_WIDTH * LTDC_DISPLAY_HEIGHT * SCALE_BUFFER_COLOR_BYTE_SIZE];
 #endif
 
 // Display context for the flush process
@@ -25,9 +25,9 @@ display_context_t display = (display_context_t){
 #if FLUSH_METHOD == FLUSH_DMA2D
   .dma2d = {
     .step = DISPLAY_STEP_IDLE,
-    .intermediate = {
-      .buf_color_format = INTERMEDIATE_COLOR_FORMAT,
-      .buf_address = intermediate_buffer,
+    .scale = {
+      .buf_color_format = SCALE_BUFFER_COLOR_FORMAT,
+      .buf_address = scale_buffer,
     }
   }
 #endif
@@ -160,24 +160,24 @@ static void display_dma2d_configure_first_pass()
   // Configure the loop context for the first pass
   display.dma2d.loop.counter            = display.destination.area_height;
   display.dma2d.loop.source_stride      = get_stride_from_flush_cf(display.source.buf_width, display.source.buf_color_format);
-  display.dma2d.loop.destination_stride = get_stride_from_flush_cf(display.source.area_width, display.dma2d.intermediate.buf_color_format);
+  display.dma2d.loop.destination_stride = get_stride_from_flush_cf(display.source.area_width, display.dma2d.scale.buf_color_format);
   display.dma2d.loop.blend_coeff        = ((display.source.area_height - 1) << BLEND_SHIFT) / display.destination.area_height;
   display.dma2d.loop.blend_index        = display.dma2d.loop.blend_coeff >> 1;
   display.dma2d.loop.base_address       = display.source.buf_address;
 
   // Configure the format, the alpha mode and the initial alpha value of the foreground image
   DMA2D->FGPFCCR = (DMA2D_REPLACE_ALPHA             << DMA2D_FGPFCCR_AM_Pos    |
-		    display.source.buf_color_format << DMA2D_FGPFCCR_CM_Pos    |
-		    0x00                            << DMA2D_FGPFCCR_ALPHA_Pos );
+		            display.source.buf_color_format << DMA2D_FGPFCCR_CM_Pos    |
+		            0x00                            << DMA2D_FGPFCCR_ALPHA_Pos );
 
   // Configure the format, the alpha mode and the initial alpha value of the background image
   DMA2D->BGPFCCR = (DMA2D_REPLACE_ALPHA             << DMA2D_BGPFCCR_AM_Pos    |
-		    display.source.buf_color_format << DMA2D_BGPFCCR_CM_Pos    |
-		    0xFF                            << DMA2D_BGPFCCR_ALPHA_Pos );
+		            display.source.buf_color_format << DMA2D_BGPFCCR_CM_Pos    |
+		            0xFF                            << DMA2D_BGPFCCR_ALPHA_Pos );
 
   // Configure the color format and the buffer address of the output image
-  DMA2D->OPFCCR  = (display.dma2d.intermediate.buf_color_format << DMA2D_OPFCCR_CM_Pos);
-  DMA2D->OMAR    = (uint32_t)display.dma2d.intermediate.buf_address;
+  DMA2D->OPFCCR  = (display.dma2d.scale.buf_color_format << DMA2D_OPFCCR_CM_Pos);
+  DMA2D->OMAR    = (uint32_t)display.dma2d.scale.buf_address;
 
   // Configure the DMA2D to process 1 line and source width column
   DMA2D->NLR     = (1                        << DMA2D_NLR_NL_Pos |
@@ -191,24 +191,24 @@ static void display_dma2d_configure_second_pass()
 
   // Configure the loop context for the second pass
   display.dma2d.loop.counter            = display.destination.area_width;
-  display.dma2d.loop.source_stride      = get_stride_from_flush_cf(1, display.dma2d.intermediate.buf_color_format);
+  display.dma2d.loop.source_stride      = get_stride_from_flush_cf(1, display.dma2d.scale.buf_color_format);
   display.dma2d.loop.destination_stride = get_stride_from_flush_cf(1, display.destination.buf_color_format);
   display.dma2d.loop.blend_coeff        = ((display.source.area_width - 1) << BLEND_SHIFT) / display.destination.area_width;
   display.dma2d.loop.blend_index        = display.dma2d.loop.blend_coeff >> 1;
-  display.dma2d.loop.base_address       = display.dma2d.intermediate.buf_address;
+  display.dma2d.loop.base_address       = display.dma2d.scale.buf_address;
 
   // Configure the format, the alpha mode and the initial alpha value of the foreground image
-  DMA2D->FGPFCCR = (DMA2D_REPLACE_ALPHA                         << DMA2D_FGPFCCR_AM_Pos    |
-		    display.dma2d.intermediate.buf_color_format << DMA2D_FGPFCCR_CM_Pos    |
-		    0x00                                        << DMA2D_FGPFCCR_ALPHA_Pos );
+  DMA2D->FGPFCCR = (DMA2D_REPLACE_ALPHA                  << DMA2D_FGPFCCR_AM_Pos    |
+		            display.dma2d.scale.buf_color_format << DMA2D_FGPFCCR_CM_Pos    |
+		            0x00                                 << DMA2D_FGPFCCR_ALPHA_Pos );
 
   // Configure the DMA2D to skip (source width - 1) bytes at each line in the foreground
   DMA2D->FGOR    = ((display.source.area_width - 1) << DMA2D_FGOR_LO_Pos);
 
   // Configure the format, the alpha mode and the initial alpha value of the background image
-  DMA2D->BGPFCCR = (DMA2D_REPLACE_ALPHA                         << DMA2D_BGPFCCR_AM_Pos    |
-		    display.dma2d.intermediate.buf_color_format << DMA2D_BGPFCCR_CM_Pos    |
-		    0xFF                                        << DMA2D_BGPFCCR_ALPHA_Pos );
+  DMA2D->BGPFCCR = (DMA2D_REPLACE_ALPHA                  << DMA2D_BGPFCCR_AM_Pos    |
+		            display.dma2d.scale.buf_color_format << DMA2D_BGPFCCR_CM_Pos    |
+		            0xFF                                 << DMA2D_BGPFCCR_ALPHA_Pos );
 
   // Configure the DMA2D to skip (source width - 1) bytes at each line in the background
   DMA2D->BGOR    = ((display.source.area_width - 1) << DMA2D_FGOR_LO_Pos);

@@ -21,8 +21,8 @@
 // The method used to flush the image from lvgl to the ltdc display
 #define FLUSH_METHOD FLUSH_NEMA
 
-// The color format of the DMA2D intermediate buffer
-#define INTERMEDIATE_COLOR_FORMAT DMA2D_INPUT_RGB565
+// The color format of the DMA2D scale buffer
+#define SCALE_BUFFER_COLOR_FORMAT DMA2D_INPUT_RGB565
 
 // ------ END CONFIGURATION ------
 
@@ -43,17 +43,17 @@
 
 #if FLUSH_METHOD == FLUSH_DMA2D
 
-#if INTERMEDIATE_COLOR_FORMAT == DMA2D_INPUT_RGB565 \
- || INTERMEDIATE_COLOR_FORMAT == DMA2D_INPUT_ARGB1555 \
- || INTERMEDIATE_COLOR_FORMAT == DMA2D_INPUT_ARGB4444
-#define INTERMEDIATE_COLOR_BYTE_SIZE 2
-#define INTERMEDIATE_COLOR_ALIGNMENT 16
-#elif INTERMEDIATE_COLOR_FORMAT == DMA2D_INPUT_RGB888
-#define INTERMEDIATE_COLOR_BYTE_SIZE 3
-#define INTERMEDIATE_COLOR_ALIGNMENT 32
-#elif INTERMEDIATE_COLOR_FORMAT == DMA2D_INPUT_ARGB8888
-#define INTERMEDIATE_COLOR_BYTE_SIZE 4
-#define INTERMEDIATE_COLOR_ALIGNMENT 32
+#if SCALE_BUFFER_COLOR_FORMAT == DMA2D_INPUT_RGB565 \
+ || SCALE_BUFFER_COLOR_FORMAT == DMA2D_INPUT_ARGB1555 \
+ || SCALE_BUFFER_COLOR_FORMAT == DMA2D_INPUT_ARGB4444
+#define SCALE_BUFFER_COLOR_BYTE_SIZE 2
+#define SCALE_BUFFER_COLOR_ALIGNMENT 16
+#elif SCALE_BUFFER_COLOR_FORMAT == DMA2D_INPUT_RGB888
+#define SCALE_BUFFER_COLOR_BYTE_SIZE 3
+#define SCALE_BUFFER_COLOR_ALIGNMENT 32
+#elif SCALE_BUFFER_COLOR_FORMAT == DMA2D_INPUT_ARGB8888
+#define SCALE_BUFFER_COLOR_BYTE_SIZE 4
+#define SCALE_BUFFER_COLOR_ALIGNMENT 32
 #endif
 
 #define BLEND_SHIFT_MAX_VAL MAX(LTDC_DISPLAY_WIDTH, MAX(LTDC_DISPLAY_HEIGHT, MAX(LVGL_DISPLAY_WIDTH, LVGL_DISPLAY_HEIGHT)))
@@ -86,7 +86,7 @@ typedef enum {
 typedef struct {
   uint8_t buf_color_format;
   void *buf_address;
-} display_intermediate_t;
+} display_scale_t;
 
 typedef struct {
   uint16_t counter;
@@ -100,7 +100,7 @@ typedef struct {
 typedef struct {
   display_step_t step;
   display_loop_t loop;
-  display_intermediate_t intermediate;
+  display_scale_t scale;
 } display_dma2d_t;
 #elif FLUSH_METHOD == FLUSH_NEMA
 typedef struct {
