@@ -22,7 +22,7 @@
 ******************************************************************************
 ** @attention
 **
-** Copyright (c) 2024 STMicroelectronics.
+** Copyright (c) 2025 STMicroelectronics.
 ** All rights reserved.
 **
 ** This software is licensed under terms that can be found in the LICENSE file
@@ -40,13 +40,18 @@ _estack = ORIGIN(RAM) + LENGTH(RAM); /* end of "RAM" Ram type memory */
 
 _Min_Heap_Size = 0x200; /* required amount of heap */
 _Min_Stack_Size = 0x400; /* required amount of stack */
+/* Start user variables */
+
+/* End user variables */
 
 /* Memories definition */
 MEMORY
 {
-  RAM       (xrw) : ORIGIN = 0x20000000, LENGTH = 3008K
-  FLASH     (rx)  : ORIGIN = 0x08000000, LENGTH = 4096K
-  EXT_FLASH (r)   : ORIGIN = 0xA0000000, LENGTH = 128M
+/* Start MX regions */
+  FLASH	(rx)	: ORIGIN = 0x08000000, LENGTH = 4096K
+  RAM	(xrw)	: ORIGIN = 0x20000000, LENGTH = 3008K
+  EXT_FLASH	(rx)	: ORIGIN = 0xa0000000, LENGTH = 131072K
+/* End MX regions */
 }
 
 /* Sections */
@@ -185,11 +190,17 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
-  
-  ExtFlashSection :
+
+ 
+ 
+ 
+ 
+ /*  Unitialized EXT_FLASH section into "EXT_FLASH" EXT_FLASH type memory [MMT section] */
+ .EXT_FLASH_Section :
   {
-    *(ExtFlashSection ExtFlashSection.*)
-    *(.gnu.linkonce.r.*)
-    . = ALIGN(0x4);
+    . = ALIGN(4);
+    KEEP (*(.EXT_FLASH_Section))
+    . = ALIGN(4);
   } >EXT_FLASH
+
 }

@@ -48,7 +48,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 // Attribute to write static data to external flash
-#define EXT_FLASH __attribute__((section("ExtFlashSection"))) __attribute__((aligned(4)))
+#define EXT_FLASH __attribute__((section(".EXT_FLASH_Section"))) __attribute__((aligned(4)))
 // Give hint to compiler and help the CPU Branch Prediction
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
