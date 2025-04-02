@@ -19,9 +19,21 @@ pub fn init() !void {
   }
 }
 
-pub fn ask() !void {
+pub fn deinit() void {
+  unsubscribe() catch {};
+}
+
+pub fn subscribe() !void {
   for(requestsMessages) |message| {
     const buf = std.mem.toBytes(message);
+    try udp.sendTo(config.XPlaneIP, config.XPlaneSendPort, &buf);
+  }
+}
+
+pub fn unsubscribe() !void {
+  for(requestsMessages) |*message| {
+    message.frequency = 0;
+    const buf = std.mem.toBytes(message.*);
     try udp.sendTo(config.XPlaneIP, config.XPlaneSendPort, &buf);
   }
 }

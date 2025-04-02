@@ -11,9 +11,10 @@ pub fn main() !void {
   defer udp.deinit();
 
   try dataref.init();
+  defer dataref.deinit();
 
-  var askThread = try std.Thread.spawn(.{}, datarefAskThread, .{});
-  askThread.detach();
+  var subscribeThread = try std.Thread.spawn(.{}, datarefSubscribeThread, .{});
+  subscribeThread.detach();
 
   while(true){
     const datarefs = try dataref.receive();
@@ -21,9 +22,9 @@ pub fn main() !void {
   }
 }
 
-fn datarefAskThread() void {
+fn datarefSubscribeThread() void {
   while(true){
-    dataref.ask() catch {};
-    std.Thread.sleep(1e9); // Ask every 1 second
+    dataref.subscribe() catch {};
+    std.Thread.sleep(1e9); // Subscribe every 1 second
   }
 }
