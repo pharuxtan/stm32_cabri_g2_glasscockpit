@@ -75,7 +75,7 @@ static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_FLASH_Init(void);
 static void MX_GTZC_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void GTZC_Set_Privileged(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -118,7 +118,7 @@ int main(void)
   MX_GTZC_Init();
 
   /* USER CODE BEGIN SysInit */
-
+  GTZC_Set_Privileged();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -315,11 +315,6 @@ static void MX_FLASH_Init(void)
 
   FLASH_BBSecInitStruct.Bank = FLASH_BANK_1;
   FLASH_BBSecInitStruct.BBAttributesType = FLASH_BB_PRIV;
-  if (HAL_FLASHEx_ConfigBBAttributes(&FLASH_BBSecInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  FLASH_BBSecInitStruct.Bank = FLASH_BANK_2;
   if (HAL_FLASHEx_ConfigBBAttributes(&FLASH_BBSecInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -893,11 +888,18 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void GTZC_Set_Privileged(void)
+{
+    HAL_GTZC_TZSC_ConfigPeriphAttributes(GTZC_PERIPH_GPU2D, GTZC_TZSC_PERIPH_PRIV | GTZC_TZSC_PERIPH_NSEC);
+    HAL_GTZC_TZSC_ConfigPeriphAttributes(GTZC_PERIPH_DMA2D, GTZC_TZSC_PERIPH_PRIV | GTZC_TZSC_PERIPH_NSEC);
+    HAL_GTZC_TZSC_ConfigPeriphAttributes(GTZC_PERIPH_LTDC, GTZC_TZSC_PERIPH_PRIV | GTZC_TZSC_PERIPH_NSEC);
+}
+
 int _getentropy(void *buffer, size_t length)
 {
-  (void) buffer;
-  (void) length;
-  return -1;
+	(void) buffer;
+	(void) length;
+	return -1;
 }
 /* USER CODE END 4 */
 
@@ -939,7 +941,6 @@ void MPU_Config(void)
   MPU_InitStruct.Number = MPU_REGION_NUMBER2;
   MPU_InitStruct.BaseAddress = 0xA0000000;
   MPU_InitStruct.LimitAddress = 0xA7FFFFFF;
-  MPU_InitStruct.AttributesIndex = MPU_ATTRIBUTES_NUMBER2;
   MPU_InitStruct.AccessPermission = MPU_REGION_PRIV_RO;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
 
@@ -956,14 +957,6 @@ void MPU_Config(void)
   /** Initializes and configures the Attribute 1 and the memory to be protected
   */
   MPU_AttributesInit.Number = MPU_ATTRIBUTES_NUMBER1;
-  MPU_AttributesInit.Attributes = INNER_OUTER(MPU_WRITE_BACK|MPU_TRANSIENT
-                              |MPU_RW_ALLOCATE);
-
-  HAL_MPU_ConfigMemoryAttributes(&MPU_AttributesInit);
-
-  /** Initializes and configures the Attribute 2 and the memory to be protected
-  */
-  MPU_AttributesInit.Number = MPU_ATTRIBUTES_NUMBER2;
   MPU_AttributesInit.Attributes = INNER_OUTER(MPU_NOT_CACHEABLE);
 
   HAL_MPU_ConfigMemoryAttributes(&MPU_AttributesInit);

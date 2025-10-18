@@ -31,7 +31,7 @@ pub fn subscribe() !void {
 }
 
 pub fn unsubscribe() !void {
-  for(requestsMessages) |*message| {
+  for(&requestsMessages) |*message| {
     message.frequency = 0;
     const buf = std.mem.toBytes(message.*);
     try udp.sendTo(config.XPlaneIP, config.XPlaneSendPort, &buf);
